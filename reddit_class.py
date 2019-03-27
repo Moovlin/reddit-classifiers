@@ -1,12 +1,16 @@
+# Richard Joerger
+
 import praw
 import sys
 import csv
 import json
+from time import sleep
 
 USER_FILE = "users.csv"
 
+
 def get_info(which):
-    with open (USER_FILE) as csvfile:
+    with open(USER_FILE) as csvfile:
         reader = csv.DictReader(csvfile)
         vals = []
         for row in reader:
@@ -18,9 +22,10 @@ def get_info(which):
             # Load the dict for user 2
             return vals[1]
 
+
 def main():
     if len(sys.argv) != 4:
-        print("help")
+        print("python2 reddit_class.py <user> <subreddit> <# of data_points>")
         exit()
 
     subreddit = sys.argv[2]
@@ -33,19 +38,25 @@ def main():
                          username=vals['username'])
 
     while True:
-        data = []
+        data = {}
         try:
             for comment in reddit.subreddit(subreddit).stream.comments():
-                data.append((vars(comment))
+                in_data = vars(comment)
+                title = in_data.link_title
+                body = in_data.body
+                to_save = {'title': title, 'body': body}
+                data[str(data_points)] = to_save
                 if data_points == 0:
                     raise Exception()
                 data_points = data_points - 1
-        except:
-            with open('data_%s.txt'%subreddit, 'w+') as outfile
-                for i
+        except (Exception):
             if data_points == 0:
                 break
-             
+            print("starting 15 minute sleep")
+            sleep(900)
+            print("done sleeping")
+    with open('data_%s.txt' % subreddit, 'w') as outfile:
+        outfile.write(str(data))
             
 
 if __name__ == '__main__':
