@@ -42,21 +42,40 @@ def main():
         try:
             for comment in reddit.subreddit(subreddit).stream.comments():
                 in_data = vars(comment)
-                title = in_data.link_title
-                body = in_data.body
-                to_save = {'title': title, 'body': body}
+                print(in_data.keys())
+                title = in_data['link_title']
+                body = in_data['body']
+                ups = in_data['ups']
+                score = in_data['score']
+                num_comments = in_data['num_comments']
+                contro = in_data['controversiality']
+                downs = in_data['downs']
+                submitter = in_data['is_submitter']
+                author = in_data['author']
+                to_save = {"title": title, 
+                           "body": body,
+                           "author": author,
+                           "ups": ups,
+                           "downs": downs,
+                           "submitter": submitter,
+                           "score": score,
+                           "num_comments": num_comments,
+                           "contro": contro}
                 data[str(data_points)] = to_save
+                print(to_save)
                 if data_points == 0:
+                    print("Got all them points")
                     raise Exception()
                 data_points = data_points - 1
-        except (Exception):
+        except Exception as e:
+            print(e)
             if data_points == 0:
                 break
-            print("starting 15 minute sleep")
-            sleep(900)
+            print("starting 10 minute sleep")
+            sleep(600)
             print("done sleeping")
     with open('data_%s.txt' % subreddit, 'w') as outfile:
-        outfile.write(str(data))
+        outfile.write(json.dumps(data))
             
 
 if __name__ == '__main__':
