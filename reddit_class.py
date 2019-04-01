@@ -40,9 +40,9 @@ def main():
     while True:
         data = {}
         try:
-            for comment in reddit.subreddit(subreddit).stream.comments():
+            for comment in \
+            reddit.subreddit(subreddit).stream.comments():
                 in_data = vars(comment)
-                print(in_data.keys())
                 title = in_data['link_title']
                 body = in_data['body']
                 ups = in_data['ups']
@@ -52,21 +52,23 @@ def main():
                 downs = in_data['downs']
                 submitter = in_data['is_submitter']
                 author = in_data['author']
+                comm_id = in_data['id']
                 to_save = {"title": title, 
                            "body": body,
-                           "author": author,
+                           "author": author.fullname,
                            "ups": ups,
                            "downs": downs,
                            "submitter": submitter,
                            "score": score,
                            "num_comments": num_comments,
                            "contro": contro}
-                data[str(data_points)] = to_save
-                print(to_save)
-                if data_points == 0:
-                    print("Got all them points")
-                    raise Exception()
-                data_points = data_points - 1
+                if comm_id not in data:
+                    data[comm_id] = to_save
+                    data_points = data_points - 1
+                    print("%s: %d" % (subreddit, data_points))
+                    if data_points == 0:
+                        print("Got all them points")
+                        raise Exception()
         except Exception as e:
             print(e)
             if data_points == 0:
